@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>ADMIN DASHBOARD</title>
+
+    <!-- Font -->
+     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon (fixed) -->
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+
+<!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+    </div>
+
+    <div class="right">
+        <a href="stats.html">STATS</a>
+        <a href="admin-dashboard.html">DASHBOARD</a>
+        <a href="admin-orders.html">ORDERS</a>
+        <a href="add-product.html">PRODUCTS</a>
+         <a href="account.html">ACCOUNT</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+
+<!-- 📱 DROPDOWN MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+    <a href="stats.html">STATS</a><br><br>
+    <a href="admin-orders.html">ORDERS</a><br><br>
+     <a href="account.html">ACCOUNT</a><br><br>
+     <a href="admin-dashboard.html">DASHBOARD</a><br><br>
+     <a href="add-product.html">PRODUCTS</a><br><br>
+</div>
+
+<!-- 📦 CONTENT -->
+<div class="container">
+
+<h2 style="text-transform: uppercase;">ADMIN DASHBOARD</h2>
+
+<div id="stats" style="display:flex; gap:20px; flex-wrap:wrap;"></div>
+
+</div>
+
+<script>
+// 🔐 Protect page
+const role = localStorage.getItem("role");
+
+if (role !== "admin") {
+    alert("Access denied");
+    window.location.href = "/login.html";
+}
+
+// 📊 Fetch stats
+fetch("/admin-stats")
+.then(res => res.json())
+.then(data => {
+    const container = document.getElementById("stats");
+
+   container.innerHTML = `
+    <div class="card">
+        <h3>TOTAL ORDERS</h3>
+        <p>${data.totalOrders}</p>
+    </div>
+
+    <div class="card">
+        <h3>TOTAL REVENUE</h3>
+        <p>₹${data.totalRevenue}</p>
+    </div>
+
+    <div class="card">
+        <h3>TOTAL PRODUCTS</h3>
+        <p>${data.totalProducts}</p>
+    </div>
+
+    <canvas id="revenueChart" style="max-width:600px; margin-top:30px;"></canvas>
+`;
+const labels = data.graph.map(item => item.date);
+const values = data.graph.map(item => item.revenue);
+
+const ctx = document.getElementById("revenueChart").getContext("2d");
+
+new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Revenue",
+            data: values,
+            tension: 0.3
+        }]
+    }
+});
+});
+
+// 📱 Toggle menu
+function toggleMenu() {
+    const menu = document.getElementById("menuBox");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CHECKOUT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+
+<!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    </div>
+
+    <div class="right">
+        <a href="index.html">PRODUCTS</a>
+        <a href="cart.html">CART</a>
+        <a href="account.html">ACCOUNT</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+
+<!-- 📱 DROPDOWN MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px;">
+    <a href="index.html">PRODUCTS</a><br><br>
+    <a href="cart.html">CART</a><br><br>
+    <a href="account.html">ACCOUNT</a>
+</div>
+
+<!-- 📦 CONTENT -->
+<div class="container">
+
+<h2 style="text-transform: uppercase;">CHECKOUT</h2>
+
+<form onsubmit="return false;">
+    <input type="text" id="name" placeholder="Enter Name" required>
+    <input type="text" id="address" placeholder="Enter Address" required>
+
+    <h3>Scan & Pay</h3>
+
+    <div class="qr-container">
+        <img src="qrcode.png" alt="QR Code" class="qr-img">
+        <p>Scan this QR and complete payment</p>
+    </div>
+
+    <!-- ❌ Removed screenshot section -->
+
+    <br><br>
+    <button type="button" onclick="placeOrder()">Place Order</button>
+</form>
+
+</div>
+
+<script>
+
+// 📱 Toggle menu
+function toggleMenu() {
+    const menu = document.getElementById("menuBox");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+
+// 🧾 Place Order
+async function placeOrder() {
+    alert("clicked");
+
+    const address = document.getElementById("address").value;
+    const email = localStorage.getItem("email");
+
+    if (!email) {
+        alert("Please login again");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const res = await fetch("/place-order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                address: address
+            })
+        });
+
+        const data = await res.json();
+        console.log("ORDER RESPONSE:", data);
+
+        if (data.success === true) {
+            window.location.href = "success.html";
+        } else {
+            alert("Error placing order");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error");
+    }
+}
+
+</script>
+
+</body>
+</html>

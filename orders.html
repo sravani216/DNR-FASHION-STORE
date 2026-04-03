@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MY ORDERS</title>
+
+    <!-- Font -->
+     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+
+<!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    </div>
+
+    <div class="right">
+        <a href="index.html">PRODUCTS</a>
+        <a href="cart.html">CART</a>
+        <a href="account.html">ACCOUNT</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+
+<!-- 📱 DROPDOWN MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+    <a href="index.html">PRODUCTS</a><br><br>
+    <a href="cart.html">CART</a><br><br>
+    <a href="account.html">ACCOUNT</a>
+</div>
+
+<!-- 📦 CONTENT -->
+<div class="container">
+
+<h2 style="text-transform: uppercase;">MY ORDERS</h2>
+
+<div id="orders"></div>
+
+</div>
+
+<script>
+// 📱 Toggle menu
+function toggleMenu() {
+    const menu = document.getElementById("menuBox");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+
+// 📦 Fetch orders
+fetch('/orders')
+.then(res => res.json())
+.then(data => {
+    const container = document.getElementById('orders');
+    container.innerHTML = "";
+
+    data.forEach(order => {
+
+        // 🎯 STATUS LOGIC
+        let statusText = "";
+        let color = "";
+
+        switch(order.status) {
+            case "Payment Pending Verification":
+                statusText = "⏳ Payment Verification Pending";
+                color = "orange";
+                break;
+
+            case "Paid":
+                statusText = "✅ Payment Confirmed";
+                color = "green";
+                break;
+
+            case "Rejected":
+                statusText = "❌ Payment Rejected";
+                color = "red";
+                break;
+
+            case "Delivered":
+                statusText = "📦 Delivered";
+                color = "green";
+                break;
+
+            case "Cancelled":
+                statusText = "🚫 Cancelled";
+                color = "red";
+                break;
+
+            default:
+                statusText = order.status;
+                color = "black";
+        }
+
+        let html = `
+            <div class="card">
+                <h3>ORDER ID: ${order.order_id}</h3>
+        `;
+
+        order.items.forEach(item => {
+            html += `
+                <p>${item.product_name} (Qty: ${item.quantity}) - ₹${item.price}</p>
+            `;
+        });
+
+        html += `
+                <p style="color:${color}; font-weight:bold;">
+                    ${statusText}
+                </p>
+        `;
+
+        // 🖼️ Show screenshot (optional but nice)
+        if (order.screenshot) {
+            html += `
+                <p><b>Your Payment Screenshot:</b></p>
+                <img src="/${order.screenshot}" style="width:150px; border-radius:10px;">
+            `;
+        }
+
+        html += `</div>`;
+
+        container.innerHTML += html;
+    });
+});
+</script>
+
+</body>
+</html>

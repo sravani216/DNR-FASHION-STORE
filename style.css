@@ -1,0 +1,266 @@
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== BODY ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb, #ebedee);
+    position: relative;
+}
+
+/* ✨ SUBTLE BACKGROUND PATTERN */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#ffd6e7 1px, transparent 1px);
+    background-size: 25px 25px;
+    opacity: 0.4;
+    z-index: -1;
+}
+
+/* ===== HEADER (GRADIENT) ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+
+    background: linear-gradient(to right, #ff7eb3, #ff758c);
+    color: white;
+
+    border-radius: 0 0 20px 20px;
+}
+
+/* LEFT */
+.left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* LOGO */
+.logo {
+    width: 75px;
+    height: 75px;
+    border-radius: 80%;
+    object-fit: cover;
+    transition: 0.3s;
+    border: 2px solid white;
+}
+
+/* LOGO HOVER */
+.logo:hover {
+    transform: scale(2.15) rotate(10deg);
+}
+
+/* BRAND */
+.left h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: white;
+    font-size: 35px;
+}
+
+/* TAGLINE */
+.tagline {
+    font-size: 20px;
+    color: #ffeaf3;
+}
+
+/* NAV */
+.right {
+    display: flex;
+    gap: 15px;
+}
+
+.right a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    position: relative;
+}
+
+/* NAV UNDERLINE EFFECT */
+.right a::after {
+    content: "";
+    width: 0%;
+    height: 2px;
+    background: white;
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    transition: 0.3s;
+}
+
+.right a:hover::after {
+    width: 100%;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* ===== FORM ===== */
+form {
+    background: rgba(255,255,255,0.95);
+    padding: 25px;
+    border-radius: 15px;
+    margin: auto;
+    margin-bottom: 30px;
+    max-width: 350px;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* ===== BUTTON ===== */
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right, #ff7eb3, #ff758c);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+/* KEEP YOUR NICE HOVER */
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* ===== PRODUCTS ===== */
+#products,
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+
+/* ===== CARD ===== */
+.card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 18px;
+    padding: 15px;
+    width: 230px;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+}
+
+/* IMAGE */
+.card img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* TEXT */
+.card h3 {
+    margin: 10px 0 5px;
+}
+
+.card p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ===== ORDERS / CART ===== */
+#orders,
+#cart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#orders .card,
+#cart .card {
+    width: 100%;
+    max-width: 500px;
+    text-align: left;
+}
+
+/* ===== QR ===== */
+.qr-img {
+    width: 180px;
+    border-radius: 12px;
+}
+
+/* ===== MENU ===== */
+#menuBox {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .right {
+        justify-content: center;
+    }
+
+    .card {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    #orders .card {
+        width: 95%;
+    }
+}
+/* ===== STATS CENTER FIX ===== */
+
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;   /* 🔥 centers horizontally */
+    align-items: center;       /* 🔥 centers vertically (rows) */
+    gap: 20px;
+    width: 100%;
+    margin: auto;
+}
+
+/* Individual stats cards */
+.stats-container .product-card {
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    width: 220px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+/* Hover effect (keep consistent with your theme) */
+.stats-container .product-card:hover {
+    transform: translateY(-6px);
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>ADMIN DASHBOARD</title>
+
+    <!-- Font -->
+     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon (fixed) -->
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+
+<!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+    </div>
+
+    <div class="right">
+        <a href="stats.html">STATS</a>
+        <a href="admin-dashboard.html">DASHBOARD</a>
+        <a href="admin-orders.html">ORDERS</a>
+        <a href="add-product.html">PRODUCTS</a>
+         <a href="account.html">ACCOUNT</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+
+<!-- 📱 DROPDOWN MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+    <a href="stats.html">STATS</a><br><br>
+    <a href="admin-orders.html">ORDERS</a><br><br>
+     <a href="account.html">ACCOUNT</a><br><br>
+     <a href="admin-dashboard.html">DASHBOARD</a><br><br>
+     <a href="add-product.html">PRODUCTS</a><br><br>
+</div>
+
+<!-- 📦 CONTENT -->
+<div class="container">
+    <h2>MY ACCOUNT</h2>
+
+   <div><p><strong>Name:</strong> <span id="name"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+   
+
+    <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+
+const email = localStorage.getItem("email");
+
+if (!email) {
+    window.location.href = "login.html";
+}
+
+// 🔥 Fetch real data from backend
+async function loadUser() {
+    try {
+        const res = await fetch("/get-user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+        console.log("USER DATA:", data);
+
+        // ✅ only proceed if user exists
+        if (data && data.user) {
+            document.getElementById("name").innerText = data.user.name;
+            document.getElementById("email").innerText = data.user.email;
+            document.getElementById("role").innerText = data.user.role;
+        } else {
+            console.log("No user data");
+        }
+
+    } catch (err) {
+        console.error(err);
+        // ❌ remove alert spam
+    }
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+loadUser();
+
+</script>
+
+</body>
+</html>

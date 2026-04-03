@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ADMIN PRODUCTS</title>
+<title>ADMIN ORDERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+<!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    </div>
+
+    <div class="right">
+        <a href="admin-dashboard.html">DASHBOARD</a>
+        <a href="admin-orders.html">ORDERS</a>
+        <a href="account.html">ACCOUNT</a>
+        <a href="stats.html">STATS</a>
+        <a href="add-product.html">PRODUCTS</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+<!-- 📱 MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px;">
+    <a href="admin-dashboard.html">DASHBOARD</a><br><br>
+    <a href="admin-orders.html">ORDERS</a><br><br>
+    <a href="account.html">ACCOUNT</a><br><br>
+    <a href="stats.html">STATS</a><br><br>
+</div>
+<!-- 📦 CONTENT -->
+<div class="container">
+
+<h2>Add Product</h2>
+
+<form id="addForm" enctype="multipart/form-data">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="description" placeholder="Description" required>
+    <input type="number" id="price" placeholder="Price" required>
+    <input type="file" id="image" required>
+    <button type="submit">Add Product</button>
+</form>
+
+<h2>Manage Products</h2>
+<div id="productList" class="grid"></div>
+
+<script>
+
+// LOAD PRODUCTS
+async function loadProducts() {
+    const res = await fetch("/products");
+    const data = await res.json();
+
+    const container = document.getElementById("productList");
+    container.innerHTML = "";
+
+    data.forEach(p => {
+        container.innerHTML += `
+            <div class="card" id="card-${p.id}">
+                <img src="${p.image}">
+
+                <div class="view">
+                    <h3>${p.name}</h3>
+                    <p>${p.description}</p>
+                    <p>₹${p.price}</p>
+
+                    <button onclick="enableEdit(${p.id})">Edit</button>
+                    <button onclick="deleteProduct(${p.id})">Delete</button>
+                </div>
+
+                <div class="edit" style="display:none;">
+                    <input type="text" id="name-${p.id}" value="${p.name}">
+                    <input type="text" id="desc-${p.id}" value="${p.description}">
+                    <input type="number" id="price-${p.id}" value="${p.price}">
+                    
+                    <button onclick="updateProduct(${p.id})">Save</button>
+                    <button onclick="loadProducts()">Cancel</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+loadProducts();
+
+
+// ADD PRODUCT
+document.getElementById("addForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", name.value);
+    formData.append("description", description.value);
+    formData.append("price", price.value);
+    formData.append("image", image.files[0]);
+
+    fetch("/add-product", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("Product added");
+        this.reset();
+        loadProducts();
+    });
+});
+
+
+// ENABLE EDIT (inside card)
+function enableEdit(id) {
+    const card = document.getElementById(`card-${id}`);
+    card.querySelector(".view").style.display = "none";
+    card.querySelector(".edit").style.display = "block";
+}
+
+
+// UPDATE PRODUCT
+function updateProduct(id) {
+
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("name", document.getElementById(`name-${id}`).value);
+    formData.append("description", document.getElementById(`desc-${id}`).value);
+    formData.append("price", document.getElementById(`price-${id}`).value);
+
+    fetch("/update-product", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Updated");
+            loadProducts();
+        } else {
+            alert("Update failed");
+        }
+    });
+}
+
+
+// DELETE PRODUCT
+function deleteProduct(id) {
+
+    if (!confirm("Delete this product?")) return;
+
+    fetch("/delete-product", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ product_id: id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Deleted");
+            loadProducts();
+        } else {
+            alert("Cannot delete (used in orders)");
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>

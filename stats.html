@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Stats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    </div>
+
+    <div class="right">
+        <a href="admin-dashboard.html">DASHBOARD</a>
+        <a href="admin-orders.html">ORDERS</a>
+        <a href="add-product.html">PRODUCTS</a>
+        <a href="account.html">ACCOUNT</a>
+        <a href="stats.html">STATS</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+
+<!-- 📱 DROPDOWN MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+    <a href="admin-dashboard.html">DASHBOARD</a><br><br>
+    <a href="admin-orders.html">ORDERS</a><br><br>
+    <a href="add-product.html">PRODUCTS</a><br><br>
+    <a href="account.html">ACCOUNT</a><br></br>
+    <a href="stats.html">STATS</a>
+</div>
+
+<h1 class="stats-title">Product Statistics</h1>
+
+<div class="stats-container" id="statsContainer"></div>
+
+<script>
+    function toggleMenu() {
+    const menu = document.getElementById("menuBox");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+async function loadStats() {
+    try {
+        console.log("Loading stats...");
+
+        const res = await fetch("/product-stats"); // ✅ important fix
+        const data = await res.json();
+
+        console.log("DATA:", data);
+
+        if (!data.success) return;
+
+        const container = document.getElementById("statsContainer");
+        container.innerHTML = "";
+
+        data.data.forEach(product => {
+
+            // create card
+            const card = document.createElement("div");
+            card.className = "product-card";
+
+            card.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>Sold: ${product.sold || 0}</p>
+                <p>Revenue: ₹${product.revenue || 0}</p>
+            `;
+
+            // popup graph
+            const graphBox = document.createElement("div");
+            graphBox.style.position = "absolute";
+            graphBox.style.width = "200px";
+            graphBox.style.height = "150px";
+            graphBox.style.background = "white";
+            graphBox.style.display = "none";
+            graphBox.style.padding = "10px";
+            graphBox.style.zIndex = "9999";
+
+            graphBox.innerHTML = `<canvas id="chart-${product.id}"></canvas>`;
+            document.body.appendChild(graphBox);
+
+            let chartCreated = false;
+
+            // hover start
+            card.addEventListener("mouseenter", (e) => {
+                graphBox.style.display = "block";
+
+                graphBox.style.left = e.pageX + 10 + "px";
+                graphBox.style.top = e.pageY + 10 + "px";
+
+                if (!chartCreated) {
+                    const ctx = document
+                        .getElementById(`chart-${product.id}`)
+                        .getContext("2d");
+
+                    new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: ["Sold", "Revenue"],
+                            datasets: [{
+                                data: [
+                                    product.sold || 0,
+                                    product.revenue || 0
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+
+                    chartCreated = true;
+                }
+            });
+
+            // move popup
+            card.addEventListener("mousemove", (e) => {
+                graphBox.style.left = e.pageX + 10 + "px";
+                graphBox.style.top = e.pageY + 10 + "px";
+            });
+
+            // hide popup
+            card.addEventListener("mouseleave", () => {
+                graphBox.style.display = "none";
+            });
+
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("ERROR:", err);
+    }
+}
+
+loadStats();
+</script>
+
+</body>
+</html>

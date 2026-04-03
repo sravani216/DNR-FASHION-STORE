@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ADMIN ORDERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+
+<!-- 🔝 NAVBAR -->
+<div class="header">
+    <div class="left">
+        <img src="favicon.png" class="logo">
+        <h2>DNR</h2>
+        <span class="tagline">Level up your wardrobe</span>
+    </div>
+
+    <div class="right">
+        <a href="admin-dashboard.html">DASHBOARD</a>
+        <a href="admin-orders.html">ORDERS</a>
+        <a href="account.html">ACCOUNT</a>
+        <a href="add-product.html">PRODUCTS</a>
+        <a href="stats.html">STATS</a>
+        <span class="menu" onclick="toggleMenu()">☰</span>
+    </div>
+</div>
+
+<!-- 📱 MENU -->
+<div id="menuBox" style="display:none; position:absolute; right:20px; top:70px; background:white; padding:15px; border-radius:10px;">
+    <a href="admin-dashboard.html">DASHBOARD</a><br><br>
+    <a href="admin-orders.html">ORDERS</a><br><br>
+    <a href="account.html">ACCOUNT</a><br></br>
+    <a href="add-product.html">PRODUCTS</a><br><br>
+    <a href="stats.html">STATS</a><br><br>
+</div>
+
+<!-- 📦 CONTENT -->
+<div class="container">
+
+<h2>ADMIN ORDER MANAGEMENT</h2>
+
+<!-- 🔍 FILTER -->
+<div style="margin-bottom: 20px;">
+    <label><b>FILTER BY STATUS:</b></label>
+
+    <select id="statusFilter" onchange="filterOrders()">
+        <option value="ALL">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Paid">Paid</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+    </select>
+</div>
+
+<div id="orders"></div>
+
+</div>
+
+<script>
+
+// 🔐 Protect
+const role = localStorage.getItem("role");
+if (role !== "admin") {
+    window.location.href = "login.html";
+}
+
+let allOrders = [];
+
+// 📦 Load Orders
+async function loadOrders() {
+    try {
+        const res = await fetch("/admin-orders");
+        const data = await res.json();
+
+        console.log("ADMIN ORDERS:", data);
+
+        allOrders = data;
+        renderOrders(data);
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("orders").innerHTML = "Error loading orders";
+    }
+}
+
+// 🧠 Render Orders
+function renderOrders(data) {
+    const container = document.getElementById("orders");
+    container.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        container.innerHTML = "<h3>No orders found</h3>";
+        return;
+    }
+
+    data.forEach(order => {
+
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <h3>Order ID: ${order.id}</h3>
+            <p><b>Email:</b> ${order.email}</p>
+            <p><b>Total:</b> ₹${order.total_amount}</p>
+            <p><b>Status:</b> ${order.status}</p>
+            <p><b>Payment:</b> ${order.payment_status}</p>
+            <p><b>Address:</b> ${order.address || "Not provided"}</p>
+            <p><b>Date:</b> ${order.created_at}</p>
+
+            ${order.screenshot ? `<img src="/${order.screenshot}" width="150" style="border-radius:10px;">` : ""}
+
+            <hr>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+// 🔍 Filter Orders
+function filterOrders() {
+    const selected = document.getElementById("statusFilter").value;
+
+    if (selected === "ALL") {
+        renderOrders(allOrders);
+    } else {
+        const filtered = allOrders.filter(order => order.status === selected);
+        renderOrders(filtered);
+    }
+}
+
+// 📱 Menu Toggle
+function toggleMenu() {
+    const menu = document.getElementById("menuBox");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+
+// 🚀 Init
+loadOrders();
+
+</script>
+
+</body>
+</html>
