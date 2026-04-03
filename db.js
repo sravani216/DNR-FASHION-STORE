@@ -1,23 +1,29 @@
 const mysql = require("mysql2");
 
-// ✅ Use environment variables to keep code the same across environments
 const db = mysql.createPool({
+  // This looks at Render's settings first, then your computer
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "DNR@fashion16",
   database: process.env.DB_NAME || "dnr_store",
+  // Port is 4000 for TiDB, but 3306 for your local PC
+  port: process.env.DB_PORT || 3306, 
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  // CRITICAL: This allows the encrypted connection required by TiDB
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-// Optional: test connection
+// Test connection
 db.getConnection((err, connection) => {
   if (err) {
     console.error("❌ Database connection failed:", err.message);
   } else {
     console.log("✅ Connected to MySQL database");
-    connection.release();
+    if (connection) connection.release();
   }
 });
 
