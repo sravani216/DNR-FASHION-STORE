@@ -522,6 +522,9 @@ app.get("/product-stats", (req, res) => {
     );
 });
 // ================= SERVER =================
-app.listen(5000, () => {
-    console.log("Server running on port 5000");
+// Use Render's port, or 5000 if local
+const PORT = process.env.PORT || 5000; 
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
 });
